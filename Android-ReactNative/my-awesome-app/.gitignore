@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+.idea
+.vscode
+package-lock.json
 # Expo
 .expo/
 dist/
@@ -41,3 +44,5 @@ example
 # generated native folders
 /ios
 /android
+.expo/
+.expo/

@@ -1,249 +1,190 @@
-import { useRouter } from "expo-router";
+import { useState } from 'react';
 import {
-  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
   ScrollView,
   Text,
-  TouchableOpacity,
+  TextInput,
   View,
-} from "react-native";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const [isLogin, setIsLogin] = useState(true);
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+
+  const handleSubmit = () => {
+    if (isLogin) {
+      console.log('Login:', {
+        email,
+        password,
+      });
+    } else {
+      console.log('Register:', {
+        name,
+        email,
+        password,
+      });
+    }
+  };
 
   return (
-      <SafeAreaView className="flex-1 bg-slate-950">
+    <SafeAreaView className="flex-1 bg-[#121212]">
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <ScrollView
-            className="flex-1"
-            contentContainerClassName="px-5 pb-10"
-            showsVerticalScrollIndicator={false}
+          className="flex-1"
+          contentContainerClassName="flex-grow justify-center px-6 py-10"
+          keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View className="flex-row items-center justify-between pt-5">
-            <View>
-              <Text className="text-xs font-bold tracking-widest text-slate-400">
-                WELCOME BACK
-              </Text>
-
-              <Text className="mt-1 text-2xl font-extrabold text-white">
-                My Awesome App
+          {/* Logo */}
+          <View className="mb-10 items-center">
+            <View className="mb-5 h-20 w-20 items-center justify-center rounded-full bg-[#ff5500]">
+              <Text className="text-3xl font-bold text-white">
+                M
               </Text>
             </View>
 
-            <TouchableOpacity
-                className="h-12 w-12 items-center justify-center rounded-full bg-cyan-500"
+            <Text className="text-3xl font-bold text-white">
+              My Awesome App
+            </Text>
+
+            <Text className="mt-2 text-center text-sm text-gray-400">
+              {isLogin
+                ? 'Sign in to continue listening'
+                : 'Create an account and start listening'}
+            </Text>
+          </View>
+
+          {/* Login / Register switch */}
+          <View className="mb-7 flex-row rounded-xl bg-[#242424] p-1">
+            <Pressable
+              onPress={() => setIsLogin(true)}
+              className={`flex-1 items-center rounded-lg py-3 ${
+  isLogin ? 'bg-[#ff5500]' : 'bg-transparent'
+}`}
             >
-              <Text className="text-sm font-extrabold text-white">
-                MA
+              <Text
+                className={`font-semibold ${
+  isLogin ? 'text-white' : 'text-gray-400'
+}`}
+              >
+                Login
               </Text>
-            </TouchableOpacity>
-          </View>
+            </Pressable>
 
-          {/* Welcome Card */}
-          <View className="mt-6 overflow-hidden rounded-3xl bg-cyan-950 p-6">
-            <View className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-cyan-800/40" />
-
-            <Text className="text-2xl font-extrabold text-white">
-              Discover something new
-            </Text>
-
-            <Text className="mt-3 leading-5 text-slate-300">
-              Explore new content, discover interesting things and
-              find something you will enjoy.
-            </Text>
-
-            <TouchableOpacity
-                className="mt-5 self-start rounded-xl bg-cyan-500 px-5 py-3"
-                onPress={() => router.push("/explore")}
-                activeOpacity={0.8}
+            <Pressable
+              onPress={() => setIsLogin(false)}
+              className={`flex-1 items-center rounded-lg py-3 ${
+  !isLogin ? 'bg-[#ff5500]' : 'bg-transparent'
+}`}
             >
-              <Text className="font-bold text-white">
-                Explore now
+              <Text
+                className={`font-semibold ${
+  !isLogin ? 'text-white' : 'text-gray-400'
+}`}
+              >
+                Register
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          {/* Activity */}
-          <View className="mt-7 flex-row items-center justify-between">
-            <Text className="text-xl font-extrabold text-white">
-              Your activity
-            </Text>
-          </View>
+          {/* Form */}
+          <View className="rounded-2xl bg-[#1c1c1c] p-5">
+            {/* Name */}
+            {!isLogin && (
+              <View className="mb-5">
+                <Text className="mb-2 text-sm font-medium text-gray-300">
+                  Username
+                </Text>
 
-          <View className="mt-4 flex-row gap-3">
-            <View className="flex-1 items-center rounded-2xl bg-slate-800 p-4">
-              <Text className="text-2xl font-extrabold text-cyan-400">
-                24
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="Enter your username"
+                  placeholderTextColor="#777"
+                  autoCapitalize="none"
+                  className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+                />
+              </View>
+            )}
+
+            {/* Email */}
+            <View className="mb-5">
+              <Text className="mb-2 text-sm font-medium text-gray-300">
+                Email
               </Text>
 
-              <Text className="mt-1 text-xs text-slate-400">
-                Items
-              </Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Enter your email"
+                placeholderTextColor="#777"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+              />
             </View>
 
-            <View className="flex-1 items-center rounded-2xl bg-slate-800 p-4">
-              <Text className="text-2xl font-extrabold text-cyan-400">
-                12
+            {/* Password */}
+            <View className="mb-6">
+              <Text className="mb-2 text-sm font-medium text-gray-300">
+                Password
               </Text>
 
-              <Text className="mt-1 text-xs text-slate-400">
-                Favorites
-              </Text>
+              <TextInput
+                value={password}
+                onChangeText={setPassword}
+                placeholder="Enter your password"
+                placeholderTextColor="#777"
+                secureTextEntry
+                className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+              />
             </View>
 
-            <View className="flex-1 items-center rounded-2xl bg-slate-800 p-4">
-              <Text className="text-2xl font-extrabold text-cyan-400">
-                8
-              </Text>
+            {/* Forgot password */}
+            {isLogin && (
+              <Pressable className="mb-6 self-end">
+                <Text className="text-sm font-medium text-[#ff5500]">
+                  Forgot password?
+                </Text>
+              </Pressable>
+            )}
 
-              <Text className="mt-1 text-xs text-slate-400">
-                Collections
-              </Text>
-            </View>
-          </View>
-
-          {/* Categories Header */}
-          <View className="mt-8 flex-row items-center justify-between">
-            <Text className="text-xl font-extrabold text-white">
-              Categories
-            </Text>
-
-            <TouchableOpacity
-                onPress={() => router.push("/explore")}
+            {/* Submit */}
+            <Pressable
+              onPress={handleSubmit}
+              className="items-center rounded-xl bg-[#ff5500] py-4 active:opacity-80"
             >
-              <Text className="font-bold text-cyan-400">
-                See all
+              <Text className="text-base font-bold text-white">
+                {isLogin ? 'Sign In' : 'Create Account'}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
-          {/* Categories Row 1 */}
-          <View className="mt-4 flex-row gap-3">
-            <TouchableOpacity className="flex-1 rounded-2xl bg-slate-800 p-4">
-              <View className="h-12 w-12 items-center justify-center rounded-xl bg-slate-700">
-                <Text className="text-2xl">🎵</Text>
-              </View>
+          {/* Bottom text */}
+          <View className="mt-7 flex-row justify-center">
+            <Text className="text-sm text-gray-400">
+              {isLogin
+                ? "Don't have an account? "
+                : 'Already have an account? '}
 
-              <Text className="mt-3 text-base font-bold text-white">
-                Music
-              </Text>
-
-              <Text className="mt-1 text-xs text-slate-500">
-                128 items
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-1 rounded-2xl bg-slate-800 p-4">
-              <View className="h-12 w-12 items-center justify-center rounded-xl bg-slate-700">
-                <Text className="text-2xl">🎮</Text>
-              </View>
-
-              <Text className="mt-3 text-base font-bold text-white">
-                Games
-              </Text>
-
-              <Text className="mt-1 text-xs text-slate-500">
-                64 items
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Categories Row 2 */}
-          <View className="mt-3 flex-row gap-3">
-            <TouchableOpacity className="flex-1 rounded-2xl bg-slate-800 p-4">
-              <View className="h-12 w-12 items-center justify-center rounded-xl bg-slate-700">
-                <Text className="text-2xl">📚</Text>
-              </View>
-
-              <Text className="mt-3 text-base font-bold text-white">
-                Books
-              </Text>
-
-              <Text className="mt-1 text-xs text-slate-500">
-                42 items
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity className="flex-1 rounded-2xl bg-slate-800 p-4">
-              <View className="h-12 w-12 items-center justify-center rounded-xl bg-slate-700">
-                <Text className="text-2xl">🎬</Text>
-              </View>
-
-              <Text className="mt-3 text-base font-bold text-white">
-                Movies
-              </Text>
-
-              <Text className="mt-1 text-xs text-slate-500">
-                96 items
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Recently Added */}
-          <View className="mt-8">
-            <Text className="text-xl font-extrabold text-white">
-              Recently added
             </Text>
-          </View>
 
-          {/* Recent Item */}
-          <TouchableOpacity
-              className="mt-4 flex-row items-center rounded-2xl bg-slate-800 p-3"
-              activeOpacity={0.8}
-          >
-            <View className="h-14 w-14 items-center justify-center rounded-xl bg-slate-700">
-              <Text className="text-2xl">🎧</Text>
-            </View>
-
-            <View className="ml-3 flex-1">
-              <Text className="text-sm font-bold text-white">
-                Awesome Collection
+            <Pressable onPress={() => setIsLogin(!isLogin)}>
+              <Text className="text-sm font-bold text-[#ff5500]">
+                {isLogin ? 'Register' : 'Login'}
               </Text>
-
-              <Text className="mt-1 text-xs text-slate-500">
-                Added recently
-              </Text>
-            </View>
-
-            <TouchableOpacity className="h-10 w-10 items-center justify-center">
-              <Text className="text-lg font-extrabold text-slate-400">
-                •••
-              </Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-
-          {/* Second Recent Item */}
-          <TouchableOpacity
-              className="mt-2 flex-row items-center rounded-2xl bg-slate-800 p-3"
-              activeOpacity={0.8}
-          >
-            <View className="h-14 w-14 items-center justify-center rounded-xl bg-slate-700">
-              <Text className="text-2xl">🚀</Text>
-            </View>
-
-            <View className="ml-3 flex-1">
-              <Text className="text-sm font-bold text-white">
-                New Discovery
-              </Text>
-
-              <Text className="mt-1 text-xs text-slate-500">
-                Added yesterday
-              </Text>
-            </View>
-
-            <TouchableOpacity className="h-10 w-10 items-center justify-center">
-              <Text className="text-lg font-extrabold text-slate-400">
-                •••
-              </Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-
-          {/* Bottom */}
-          <View className="mt-8 items-center">
-            <Text className="text-xs text-slate-600">
-              My Awesome App • 2026
-            </Text>
+            </Pressable>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
