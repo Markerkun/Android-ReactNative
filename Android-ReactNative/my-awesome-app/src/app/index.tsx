@@ -1,5 +1,5 @@
-import {useState} from 'react';
 import {
+    Alert,
     KeyboardAvoidingView,
     Platform,
     Pressable,
@@ -8,33 +8,65 @@ import {
     TextInput,
     View,
 } from 'react-native';
-import {useForm, Controller} from 'react-hook-form';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {ILoginType} from "@/types/login/ILoginType";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {LoginSchema} from "@/schemas/LoginSchema";
+import { Controller, useForm } from 'react-hook-form';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { ILoginType } from '@/types/login/ILoginType';
+import { LoginSchema } from '@/schemas/LoginSchema';
 
 export default function HomeScreen() {
-    const defaultValues: ILoginType = {
-        email: '',
-        password: '',
-    }
     const {
         control,
         handleSubmit,
-        reset,
-        formState: {errors},
+        formState: { errors },
     } = useForm<ILoginType>({
         resolver: zodResolver(LoginSchema),
-        defaultValues: defaultValues,
+        defaultValues: {
+            email: '',
+            password: '',
+        },
     });
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    // const [name, setName] = useState('');
+    const myOnSubmit = async (data: ILoginType) => {
+        try {
+            const response = await fetch(
+                'http://192.168.0.105/api/Auth/login',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: data.email,
+                        password: data.password,
+                    }),
+                }
+            );
 
-    const myOnSubmit = (data: ILoginType) => {
-        console.log("Login user in Form", data);
+            const result = await response.json();
+
+            console.log('Server response:', result);
+
+            if (response.ok) {
+                Alert.alert(
+                    'Success',
+                    result.message || 'Login successful'
+                );
+            } else {
+                Alert.alert(
+                    'Error',
+                    result.message || 'Invalid email or password'
+                );
+            }
+        } catch (error) {
+            console.log('Request error:', error);
+
+            Alert.alert(
+                'Connection error',
+                'Cannot connect to the server'
+            );
+        }
     };
 
     return (
@@ -68,23 +100,19 @@ export default function HomeScreen() {
                     {/* Login / Register switch */}
                     <View className="mb-7 flex-row rounded-xl bg-[#242424] p-1">
                         <Pressable
-                            onPress={() => console.log("To login")}
-                            className={`flex-1 items-center rounded-lg py-3 bg-[#ff5500]`}
+                            onPress={() => console.log('To login')}
+                            className="flex-1 items-center rounded-lg bg-[#ff5500] py-3"
                         >
-                            <Text
-                                className={`font-semibold text-white`}
-                            >
+                            <Text className="font-semibold text-white">
                                 Login
                             </Text>
                         </Pressable>
 
                         <Pressable
-                            onPress={() => console.log("To register")}
-                            className={`flex-1 items-center rounded-lg py-3 bg-transparent`}
+                            onPress={() => console.log('To register')}
+                            className="flex-1 items-center rounded-lg bg-transparent py-3"
                         >
-                            <Text
-                                className={`font-semibold text-white`}
-                            >
+                            <Text className="font-semibold text-white">
                                 Register
                             </Text>
                         </Pressable>
@@ -98,15 +126,28 @@ export default function HomeScreen() {
                                 Електронна пошта
                             </Text>
 
-                            <TextInput
-                                value={email}
-                                onChangeText={setEmail}
-                                placeholder="Enter your email"
-                                placeholderTextColor="#777"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+                            <Controller
+                                control={control}
+                                name="email"
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <TextInput
+                                        value={value}
+                                        onChangeText={onChange}
+                                        onBlur={onBlur}
+                                        placeholder="Enter your email"
+                                        placeholderTextColor="#777"
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+                                    />
+                                )}
                             />
+
+                            {errors.email && (
+                                <Text className="mt-2 text-sm text-red-500">
+                                    {errors.email.message}
+                                </Text>
+                            )}
                         </View>
 
                         {/* Password */}
@@ -115,22 +156,35 @@ export default function HomeScreen() {
                                 Пароль
                             </Text>
 
-                            <TextInput
-                                value={password}
-                                onChangeText={setPassword}
-                                placeholder="Enter your password"
-                                placeholderTextColor="#777"
-                                secureTextEntry
-                                className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+                            <Controller
+                                control={control}
+                                name="password"
+                                render={({ field: { onChange, onBlur, value } }) => (
+                                    <TextInput
+                                        value={value}
+                                        onChangeText={onChange}
+                                        onBlur={onBlur}
+                                        placeholder="Enter your password"
+                                        placeholderTextColor="#777"
+                                        secureTextEntry
+                                        className="rounded-xl border border-[#333] bg-[#242424] px-4 py-4 text-base text-white"
+                                    />
+                                )}
                             />
+
+                            {errors.password && (
+                                <Text className="mt-2 text-sm text-red-500">
+                                    {errors.password.message}
+                                </Text>
+                            )}
                         </View>
 
+                        {/* Forgot password */}
                         <Pressable className="mb-6 self-end">
                             <Text className="text-sm font-medium text-[#ff5500]">
                                 Відновити пароль?
                             </Text>
                         </Pressable>
-
 
                         {/* Submit */}
                         <Pressable
@@ -149,8 +203,10 @@ export default function HomeScreen() {
                             Don't have an account?
                         </Text>
 
-                        <Pressable onPress={() => console.log("To register")}>
-                            <Text className="text-sm font-bold text-[#ff5500]">
+                        <Pressable
+                            onPress={() => console.log('To register')}
+                        >
+                            <Text className="ml-1 text-sm font-bold text-[#ff5500]">
                                 Register
                             </Text>
                         </Pressable>
