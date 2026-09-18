@@ -1,4 +1,5 @@
-﻿using LoginApi.Models;
+﻿using LoginApi.Dtos.Auth;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LoginApi.Controllers;
@@ -7,26 +8,53 @@ namespace LoginApi.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    [HttpPost("login")]
-    public IActionResult Login(LoginRequest request)
-    {
-        const string testEmail = "admin@gmail.com";
-        const string testPassword = "123456";
+    private readonly UserManager<UserEntity> _userManager;
 
-        if (request.Email == testEmail &&
-            request.Password == testPassword)
+    public AuthController(UserManager<UserEntity> userManager)
+    {
+        _userManager = userManager;
+    }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginDto dto)
+    {
+        var user = await _userManager.FindByEmailAsync(dto.Email);
+
+        if (user == null)
         {
-            return Ok(new LoginResponse
+            return Unauthorized(new
             {
-                Success = true,
-                Message = "Login successful"
+                success = false,
+                message = "Invalid email or password"
             });
         }
 
-        return Unauthorized(new LoginResponse
+        var passwordValid = await _userManager.CheckPasswordAsync(
+            user,
+            dto.Password);
+
+        if (!passwordValid)
         {
-            Success = false,
-            Message = "Invalid email or password"
+            return Unauthorized(new
+            {
+                success = false,
+                message = "Invalid email or password"
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Login successful",
+            user = new
+            {
+                user.Id,
+                user.Email,
+                user.UserName,
+                user.FirstName,
+                user.LastName,
+                user.Image
+            }
         });
     }
 }

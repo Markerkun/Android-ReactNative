@@ -1,0 +1,48 @@
+{
+  "roles": [
+    {
+      "name": "Admin"
+    },
+    {
+      "name": "User"
+    },
+    {
+      "name": "Moderator"
+    }
+  ],
+  "users": [
+    {
+      "email": "admin@gmail.com",
+      "userName": "admin",
+      "password": "Admin123!",
+      "firstName": "Admin",
+      "lastName": "User",
+      "image": null,
+      "roles": [
+        "Admin"
+      ]
+    },
+    {
+      "email": "user@gmail.com",
+      "userName": "user",
+      "password": "User123!",
+      "firstName": "John",
+      "lastName": "User",
+      "image": null,
+      "roles": [
+        "User"
+      ]
+    },
+    {
+      "email": "moderator@gmail.com",
+      "userName": "moderator",
+      "password": "Moderator123!",
+      "firstName": "Mike",
+      "lastName": "Moderator",
+      "image": null,
+      "roles": [
+        "Moderator"
+      ]
+    }
+  ]
+}

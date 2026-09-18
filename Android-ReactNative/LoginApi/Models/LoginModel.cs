@@ -1,6 +1,6 @@
 ﻿namespace LoginApi.Models;
 
-public class LoginRequest
+public class LoginModel
 {
     public string Email { get; set; } = string.Empty;
 
